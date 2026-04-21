@@ -1,0 +1,22 @@
+minVersion: '2.0.0'
+
+changelog:
+  policy: auto
+
+preReleaseCommand: bash scripts/craft-pre-release.sh
+
+targets:
+  - name: npm
+    id: '@sentry/scrapbook'
+    includeNames: /^sentry-scrapbook-\d.*\.tgz$/
+    access: public
+  - name: npm
+    id: '@sentry/scrapbook-jest'
+    includeNames: /^sentry-scrapbook-jest-\d.*\.tgz$/
+    access: public
+  - name: npm
+    id: '@sentry/scrapbook-vitest'
+    includeNames: /^sentry-scrapbook-vitest-\d.*\.tgz$/
+    access: public
+  - name: github
+    tagPrefix: v

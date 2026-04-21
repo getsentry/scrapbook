@@ -1,0 +1,47 @@
+name: 'Action: Prepare Release'
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release (or "auto")
+        required: false
+      force:
+        description: Force a release even when there are release-blockers (optional)
+        required: false
+      merge_target:
+        description: Target branch to merge into. Uses the default branch as a fallback (optional)
+        required: false
+        default: main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    name: 'Release a new version'
+    steps:
+      - name: Get auth token
+        id: token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.SENTRY_RELEASE_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.SENTRY_RELEASE_BOT_PRIVATE_KEY }}
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          token: ${{ steps.token.outputs.token }}
+          fetch-depth: 0
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: 'package.json'
+      - name: Prepare release
+        uses: getsentry/craft@2d78918ece86d970404ccaa029735cb5dce1901b # v2
+        env:
+          GITHUB_TOKEN: ${{ steps.token.outputs.token }}
+        with:
+          version: ${{ github.event.inputs.version }}
+          force: ${{ github.event.inputs.force }}
+          merge_target: ${{ github.event.inputs.merge_target }}
+          craft_config_from_merge_target: true
