@@ -1,0 +1,68 @@
+{
+  "name": "@sentry/scrapbook",
+  "version": "0.1.0",
+  "description": "Visual snapshot testing framework for React components using Playwright — core rendering and capture",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./emotion": {
+      "types": "./dist/renderers/emotion.d.ts",
+      "import": "./dist/renderers/emotion.mjs",
+      "require": "./dist/renderers/emotion.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.40",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "@emotion/cache": ">=11.13.0",
+    "@emotion/react": ">=11.13.0",
+    "@emotion/server": ">=11.11.0"
+  },
+  "peerDependenciesMeta": {
+    "@emotion/cache": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    },
+    "@emotion/server": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "jiti": "^2.0.0"
+  },
+  "devDependencies": {
+    "@emotion/cache": "^11.13.0",
+    "@emotion/react": "^11.13.0",
+    "@emotion/server": "^11.13.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "playwright": "^1.40.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getsentry/scrapbook.git"
+  }
+}

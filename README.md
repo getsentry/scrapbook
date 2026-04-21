@@ -1,37 +1,50 @@
 # @sentry/scrapbook
 
+> [!WARNING]
+> Scrapbook is an experimental library and long-term support is not guaranteed.
+> Use at your own risk.
+
 Visual snapshot testing for React components. Renders via SSR, screenshots with Playwright.
 
-## Local development
+## Packages
 
-Build the package, then link it into your project:
+| Package | Description |
+|---|---|
+| `@sentry/scrapbook` | Core: rendering, browser lifecycle, config, output |
+| `@sentry/scrapbook-jest` | Jest integration — preset, setup, `it.snapshot` API |
+| `@sentry/scrapbook-vitest` | Vitest integration — setup, `it.snapshot` API |
+
+## Installation
+
+Install the core package and whichever framework integration you need:
 
 ```sh
-# in this repo
-npm run build
-npm link
+# Jest
+npm add -D @sentry/scrapbook @sentry/scrapbook-jest
 
-# in your project
-npm link @sentry/scrapbook
+# Vitest
+npm add -D @sentry/scrapbook @sentry/scrapbook-vitest
+
+# Both
+npm add -D @sentry/scrapbook @sentry/scrapbook-jest @sentry/scrapbook-vitest
 ```
 
-Or reference it directly in your project's `package.json`:
+Playwright is a peer dependency, install it if you haven't already:
 
-```json
-"devDependencies": {
-  "@sentry/scrapbook": "file:../path/to/scrapbook"
-}
+```sh
+npm add -D playwright
+npm exec playwright install chromium
 ```
 
 ## Configuration
 
-Create `snapshot.config.ts` in your project root:
+Create `scrapbook.config.ts` in your project root:
 
 ```ts
 import { staticRenderer } from '@sentry/scrapbook';
-import type { VisualSnapshotConfig } from '@sentry/scrapbook';
+import type { ScrapbookConfig } from '@sentry/scrapbook';
 
-const config: VisualSnapshotConfig = {
+const config: ScrapbookConfig = {
   renderer: staticRenderer,
   headCSS: '/* your compiled CSS here */',
 };
@@ -45,16 +58,16 @@ For Emotion projects:
 import { createEmotionRenderer } from '@sentry/scrapbook/emotion';
 
 export default {
-  renderer: createEmotionRenderer({ cacheKey: 'snap' }),
+  renderer: createEmotionRenderer({ cacheKey: 'scrapbook' }),
   headCSS: fontFaceCSS,
-} satisfies VisualSnapshotConfig;
+};
 ```
 
 ### Renderers
 
-Scrapbook requires a renderer. A `renderer` is the object responsible for turning a React element into an HTML string. Two are provided out of the box.
+Scrapbook requires a renderer. A renderer is an object responsible for turning a React element into an HTML string.
 
-### Static renderer
+#### Static renderer
 
 For Tailwind, CSS modules, vanilla CSS, or any setup where styles come from `headCSS` config. No extra dependencies.
 
@@ -62,17 +75,17 @@ For Tailwind, CSS modules, vanilla CSS, or any setup where styles come from `hea
 import { staticRenderer } from '@sentry/scrapbook';
 ```
 
-### Emotion renderer
+#### Emotion renderer
 
-For Emotion CSS-in-JS. Extracts critical styles during SSR and injects them into the document.
+For Emotion CSS-in-JS. Extracts critical styles during SSR and injects them into `<head>`.
 
 ```ts
 import { createEmotionRenderer } from '@sentry/scrapbook/emotion';
 ```
 
-Requires `@emotion/cache`, `@emotion/react`, and `@emotion/server` as peer dependencies.
+Requires `@emotion/cache`, `@emotion/react`, and `@emotion/server` as peer dependencies. React 19 requires `>=11.13.0` of each; React 18 works with `>=11.11.0`.
 
-### Custom renderer
+#### Custom renderer
 
 Implement the `Renderer` interface to support any other styling approach:
 
@@ -82,24 +95,9 @@ import type { Renderer } from '@sentry/scrapbook';
 const myRenderer: Renderer = {
   render(element) {
     const html = renderToString(element);
-    return { html };               // optionally include styleTags
+    return { html };
   },
 };
-```
-
-### Wrapper
-
-Use `wrapper` to inject React providers (themes, context) around every rendered component. Per-snapshot data is passed via `extras`:
-
-```ts
-export default {
-  renderer: createEmotionRenderer(),
-  wrapper: (element, extras) => (
-    <ThemeProvider theme={extras.theme === 'dark' ? darkTheme : lightTheme}>
-      {element}
-    </ThemeProvider>
-  ),
-} satisfies VisualSnapshotConfig;
 ```
 
 ## Writing snapshot tests
@@ -113,24 +111,29 @@ import { Button } from './button';
 describe('Button', () => {
   it.snapshot('default', () => <Button>Click</Button>);
 
-  it.snapshot.each(['primary', 'danger'])('variant-%s', variant => (
+  it.snapshot.each(['primary', 'danger'])('variant', variant => (
     <Button variant={variant}>{variant}</Button>
   ));
 });
 ```
 
-Pass `extras` to feed data into your `wrapper`, and `metadata` for the output JSON:
+Pass `metadata` to add fields to the output sidecar JSON:
 
 ```tsx
 it.snapshot('dark', () => <Button>Click</Button>, {
-  extras: { theme: 'dark' },
   metadata: { theme: 'dark' },
 });
 
-it.snapshot.each(['light', 'dark'])('theme-%s', theme => <Button>Click</Button>, theme => ({
-  extras: { theme },
+it.snapshot.each(['light', 'dark'])('theme', theme => <Button>Click</Button>, theme => ({
   metadata: { theme },
 }));
+```
+
+The `" snapshot: "` marker in the test name populates `group` and `display_name` in the output metadata. Pass the full name directly:
+
+```tsx
+it.snapshot('Button snapshot: default', () => <Button>Click</Button>);
+// → { group: "Button", display_name: "default" }
 ```
 
 ## Jest setup
@@ -140,7 +143,7 @@ it.snapshot.each(['light', 'dark'])('theme-%s', theme => <Button>Click</Button>,
 import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  preset: '@sentry/scrapbook/jest-preset',
+  preset: '@sentry/scrapbook-jest',
   // add your own transform, moduleNameMapper, etc.
 };
 
@@ -153,9 +156,21 @@ Run with:
 jest --config jest.config.snapshots.ts
 ```
 
-## Vitest setup
+The preset sets `testEnvironment: 'node'`, `testMatch: ['**/*.snapshots.tsx']`, and wires up the SSR shims and `it.snapshot` API automatically.
 
-The Jest preset doesn't apply to Vitest. Wire it up manually:
+If you need to configure the setup files manually instead of using the preset:
+
+```ts
+// jest.config.snapshots.ts
+export default {
+  testEnvironment: 'node',
+  testMatch: ['**/*.snapshots.tsx'],
+  setupFiles: ['@sentry/scrapbook-jest/setup'],
+  setupFilesAfterEnv: ['@sentry/scrapbook-jest/framework'],
+};
+```
+
+## Vitest setup
 
 ```ts
 // vitest.config.snapshots.mts
@@ -165,37 +180,72 @@ export default defineConfig({
   test: {
     include: ['**/*.snapshots.tsx'],
     environment: 'node',
-    setupFiles: ['./vitest.setup.snapshots.ts'],
+    setupFiles: [
+      '@sentry/scrapbook-vitest/setup',
+      '@sentry/scrapbook-vitest/framework',
+    ],
   },
 });
 ```
 
-```ts
-// vitest.setup.snapshots.ts
-if (typeof globalThis.window === 'undefined') {
-  (globalThis as any).window = {
-    localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {}, clear: () => {}, length: 0, key: () => null },
-  };
+Run with:
+
+```sh
+vitest --config vitest.config.snapshots.mts
+```
+
+### TypeScript types for Vitest
+
+Add the package to `compilerOptions.types` in your `tsconfig.json`. This applies the `it.snapshot` types to all test files automatically — the same pattern as `vitest/globals`:
+
+```json
+{
+  "compilerOptions": {
+    "types": ["vitest/globals", "@sentry/scrapbook-vitest"]
+  }
 }
 ```
 
-Use `captureSnapshot` directly in your tests:
+Alternatively, add a triple-slash reference in any `.ts` file that is part of your TypeScript compilation:
 
 ```ts
-import { captureSnapshot, resolveConfig, closeBrowser } from '@sentry/scrapbook';
-import { afterAll } from 'vitest';
-
-afterAll(() => closeBrowser());
-
-async function snap(name: string, element: ReactElement) {
-  await captureSnapshot(element, name, resolveConfig());
-}
+/// <reference types="@sentry/scrapbook-vitest/framework-augment" />
 ```
 
 ## Output
 
-Snapshots are written to `.artifacts/snapshots/` by default. Override with:
+Snapshots are written to `.artifacts/scrapbook/` by default. Each snapshot produces a `.png` and a `.json` sidecar with its metadata.
+
+Override the output directory with an env var:
 
 ```sh
-SNAPSHOT_OUTPUT_DIR=/tmp/snaps jest --config jest.config.snapshots.ts
+SCRAPBOOK_OUTPUT_DIR=/tmp/snaps jest --config jest.config.snapshots.ts
+```
+
+Or set it in config:
+
+```ts
+export default {
+  renderer: staticRenderer,
+  outputDir: 'test-artifacts/snapshots',
+};
+```
+
+## Local development
+
+This repo is a pnpm workspace. To work on the packages locally:
+
+```sh
+pnpm install
+pnpm build        # builds core first, then jest and vitest adapters
+pnpm typecheck    # type-checks all packages
+```
+
+To use a local build in another project, reference the packages via `file:` in that project's `package.json`:
+
+```json
+"devDependencies": {
+  "@sentry/scrapbook": "file:../path/to/scrapbook/packages/core",
+  "@sentry/scrapbook-jest": "file:../path/to/scrapbook/packages/jest"
+}
 ```
