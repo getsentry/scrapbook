@@ -17,10 +17,8 @@ export interface EmotionRendererOptions {
  *
  * Peer dependencies: @emotion/cache @emotion/react @emotion/server (all >=11.13.0 for React 19)
  */
-export function createEmotionRenderer(options: EmotionRendererOptions = {
-  cacheKey: 'scrapbook',
-}): Renderer {
-  const { cacheKey } = options;
+export function createEmotionRenderer(options: EmotionRendererOptions = {}): Renderer {
+  const { cacheKey = 'scrapbook' } = options;
 
   // Dynamic imports to avoid loading Emotion when not in use.
   // Deferred to factory call time (not render time) so requires run once per renderer.
