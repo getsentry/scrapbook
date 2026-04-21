@@ -1,15 +1,10 @@
-import type {ReactElement} from 'react';
+import type { ReactElement } from 'react';
+import { afterAll, it as vitestIt, test as vitestTest } from 'vitest';
 
-import {closeBrowser} from '../browser';
-import {resolveConfig} from '../config';
-import {captureSnapshot} from '../snapshot';
+import { captureSnapshot, closeBrowser, resolveConfig } from '@sentry/scrapbook';
+import type { SnapshotOptions } from '@sentry/scrapbook';
 
 type RenderFn = () => ReactElement;
-
-export interface SnapshotOptions {
-  metadata?: Record<string, string>;
-  extras?: Record<string, unknown>;
-}
 
 type SnapshotTestFn = (name: string, renderFn: RenderFn, options?: SnapshotOptions) => void;
 
@@ -22,28 +17,16 @@ type SnapshotEachFn = <T>(
 ) => void;
 
 /**
- * Augment Jest's global test/it to add the .snapshot and .snapshot.each APIs.
- */
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace jest {
-    interface It {
-      snapshot: SnapshotTestFn & {each: SnapshotEachFn};
-    }
-  }
-}
-
-/**
- * Parses the Jest test name to extract snapshot display name and group.
+ * Parses the test name to extract snapshot display name and group.
  * Uses the " snapshot: " marker convention.
  *
  * e.g. "MyComponent snapshot: variant name" -> { group: "MyComponent", name: "variant name" }
  */
-function parseSnapshotName(testName: string): {group: string | null; displayName: string} {
+function parseSnapshotName(testName: string): { group: string | null; displayName: string } {
   const MARKER = ' snapshot: ';
   const idx = testName.indexOf(MARKER);
   if (idx === -1) {
-    return {group: null, displayName: testName};
+    return { group: null, displayName: testName };
   }
   return {
     group: testName.slice(0, idx),
@@ -54,22 +37,15 @@ function parseSnapshotName(testName: string): {group: string | null; displayName
 function registerSnapshot(name: string, renderFn: RenderFn, options: SnapshotOptions = {}): void {
   const config = resolveConfig();
 
-  test(name, async () => {
-    const currentTestName = expect.getState().currentTestName ?? name;
-    const {group, displayName} = parseSnapshotName(currentTestName);
+  vitestTest(name, async () => {
+    const { group, displayName } = parseSnapshotName(name);
 
     const metadata = {
-      ...(group ? {group} : {}),
+      ...(group ? { group } : {}),
       ...options.metadata,
     };
 
-    await captureSnapshot(
-      renderFn(),
-      displayName,
-      config,
-      metadata,
-      options.extras ?? {}
-    );
+    await captureSnapshot(renderFn(), displayName, config, metadata);
   });
 }
 
@@ -86,10 +62,10 @@ const snapshotEachFn: SnapshotEachFn =
     }
   };
 
-const snapshotApi = Object.assign(snapshotFn, {each: snapshotEachFn});
+const snapshotApi = Object.assign(snapshotFn, { each: snapshotEachFn });
 
-(it as unknown as Record<string, unknown>)['snapshot'] = snapshotApi;
-(test as unknown as Record<string, unknown>)['snapshot'] = snapshotApi;
+(vitestIt as unknown as Record<string, unknown>)['snapshot'] = snapshotApi;
+(vitestTest as unknown as Record<string, unknown>)['snapshot'] = snapshotApi;
 
 afterAll(async () => {
   await closeBrowser();

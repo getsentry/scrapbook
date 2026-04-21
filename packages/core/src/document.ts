@@ -25,7 +25,7 @@ export function buildDocument({
     ${globalCSS ? `<style>${globalCSS}</style>` : ''}
   </head>
   <body>
-    ${body}
+    <div id="scrapbook-root" style="display:inline-block">${body}</div>
   </body>
 </html>`;
 }

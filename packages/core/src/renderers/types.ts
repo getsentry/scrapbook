@@ -1,4 +1,4 @@
-import type {ReactElement} from 'react';
+import type { ReactElement } from 'react';
 
 export interface RenderOutput {
   /** The rendered HTML string (body content, not a full document) */

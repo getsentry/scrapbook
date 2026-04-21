@@ -1,0 +1,47 @@
+{
+  "name": "@sentry/scrapbook-vitest",
+  "version": "0.1.0",
+  "description": "Vitest integration for @sentry/scrapbook",
+  "types": "./dist/framework-augment.d.ts",
+  "exports": {
+    "./setup": {
+      "types": "./dist/setup.d.ts",
+      "import": "./dist/setup.mjs",
+      "require": "./dist/setup.js"
+    },
+    "./framework": {
+      "types": "./dist/framework.d.ts",
+      "import": "./dist/framework.mjs",
+      "require": "./dist/framework.js"
+    },
+    "./framework-augment": {
+      "types": "./dist/framework-augment.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@sentry/scrapbook": "*",
+    "vitest": ">=1.0.0",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@sentry/scrapbook": "workspace:*",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^3.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getsentry/scrapbook.git"
+  }
+}

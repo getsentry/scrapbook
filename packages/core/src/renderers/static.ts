@@ -1,7 +1,7 @@
-import type {ReactElement} from 'react';
-import {renderToString} from 'react-dom/server';
+import type { ReactElement } from 'react';
+import { renderToString } from 'react-dom/server';
 
-import type {Renderer, RenderOutput} from './types';
+import type { Renderer, RenderOutput } from './types';
 
 /**
  * Plain HTML renderer with no CSS-in-JS extraction.
@@ -10,6 +10,6 @@ import type {Renderer, RenderOutput} from './types';
  */
 export const staticRenderer: Renderer = {
   render(element: ReactElement): RenderOutput {
-    return {html: renderToString(element)};
+    return { html: renderToString(element) };
   },
 };

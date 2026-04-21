@@ -6,7 +6,7 @@ const preset = {
   testEnvironment: 'node',
   testMatch: ['<rootDir>/**/*.snapshots.tsx'],
   setupFiles: [path.resolve(__dirname, './setup')],
-  setupFilesAfterFramework: [path.resolve(__dirname, './framework')],
+  setupFilesAfterEnv: [path.resolve(__dirname, './framework')],
 };
 
 module.exports = preset;

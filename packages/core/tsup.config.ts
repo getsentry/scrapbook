@@ -1,7 +1,10 @@
-import {defineConfig} from 'tsup';
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/renderers/emotion.ts'],
+  entry: [
+    'src/index.ts',
+    'src/renderers/emotion.ts',
+  ],
   format: ['cjs', 'esm'],
   dts: true,
   sourcemap: true,
@@ -10,6 +13,7 @@ export default defineConfig({
     'react',
     'react-dom',
     'playwright',
+    'jiti',
     '@emotion/cache',
     '@emotion/react',
     '@emotion/server',
