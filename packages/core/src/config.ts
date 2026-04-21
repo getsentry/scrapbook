@@ -74,8 +74,8 @@ export function resolveConfig(cwd = process.cwd()): ScrapbookConfig {
 
   _resolvedConfig = {
     ...CONFIG_DEFAULTS,
-    ssrShims: { ...CONFIG_DEFAULTS.ssrShims, ...userConfig.ssrShims },
     ...userConfig,
+    ssrShims: { ...CONFIG_DEFAULTS.ssrShims, ...userConfig.ssrShims },
     outputDir:
       process.env['SCRAPBOOK_OUTPUT_DIR'] ??
       userConfig.outputDir ??
