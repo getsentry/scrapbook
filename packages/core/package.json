@@ -1,6 +1,6 @@
 {
   "name": "@sentry/scrapbook",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Visual snapshot testing framework for React components using Playwright — core rendering and capture",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -50,7 +50,7 @@
   "devDependencies": {
     "@emotion/cache": "^11.13.0",
     "@emotion/react": "^11.13.0",
-    "@emotion/server": "^11.13.0",
+    "@emotion/server": "^11.11.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
