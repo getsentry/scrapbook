@@ -43,7 +43,7 @@ const DEFAULT_GLOBAL_CSS = `
 }
 `;
 
-export const CONFIG_DEFAULTS: ScrapbookConfig = {
+export const CONFIG_DEFAULTS: Omit<ScrapbookConfig, 'renderer'> = {
   headCSS: '',
   globalCSS: DEFAULT_GLOBAL_CSS,
   outputDir: '.artifacts/scrapbook',
