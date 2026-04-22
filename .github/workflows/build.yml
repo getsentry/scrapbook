@@ -33,6 +33,12 @@ jobs:
           (cd packages/core && pnpm pack --pack-destination $GITHUB_WORKSPACE)
           (cd packages/jest && pnpm pack --pack-destination $GITHUB_WORKSPACE)
           (cd packages/vitest && pnpm pack --pack-destination $GITHUB_WORKSPACE)
+      - name: Publish dry-run
+        run: |
+          for f in *.tgz; do
+            echo "--- dry-run: $f ---"
+            npm publish "$f" --dry-run --access public
+          done
       - name: Archive artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

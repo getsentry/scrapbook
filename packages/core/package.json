@@ -1,6 +1,6 @@
 {
   "name": "@sentry/scrapbook",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Visual snapshot testing framework for React components using Playwright — core rendering and capture",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
