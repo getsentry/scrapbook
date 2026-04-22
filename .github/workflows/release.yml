@@ -1,6 +1,10 @@
 name: 'Action: Prepare Release'
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 0.1.0, or bump type: major/minor/patch)'
+        required: false
 
 permissions:
   contents: write
@@ -30,4 +34,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.token.outputs.token }}
         with:
+          version: ${{ inputs.version }}
           merge_target: main
