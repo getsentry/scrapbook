@@ -2,7 +2,7 @@
   "name": "@sentry/scrapbook-vitest",
   "version": "0.0.1",
   "description": "Vitest integration for @sentry/scrapbook",
-  "types": "./dist/framework-augment.d.ts",
+  "types": "./dist/framework.d.ts",
   "exports": {
     "./setup": {
       "types": "./dist/setup.d.ts",
@@ -15,7 +15,7 @@
       "require": "./dist/framework.js"
     },
     "./framework-augment": {
-      "types": "./dist/framework-augment.d.ts"
+      "types": "./dist/framework.d.ts"
     }
   },
   "files": [
@@ -28,6 +28,7 @@
   },
   "peerDependencies": {
     "@sentry/scrapbook": "*",
+    "@vitest/runner": ">=1.0.0",
     "vitest": ">=1.0.0",
     "react": "^18.0.0 || ^19.0.0"
   },
@@ -35,6 +36,7 @@
     "@sentry/scrapbook": "workspace:*",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
+    "@vitest/runner": "^3.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0",
     "vitest": "^3.0.0"

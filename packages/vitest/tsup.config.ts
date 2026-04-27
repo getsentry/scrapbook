@@ -1,4 +1,3 @@
-import { copyFileSync, mkdirSync } from 'node:fs';
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
@@ -13,10 +12,7 @@ export default defineConfig({
   external: [
     'react',
     'vitest',
+    '@vitest/runner',
     '@sentry/scrapbook',
   ],
-  async onSuccess() {
-    mkdirSync('dist', { recursive: true });
-    copyFileSync('src/framework-augment.d.ts', 'dist/framework-augment.d.ts');
-  },
 });

@@ -91,6 +91,9 @@ importers:
       '@types/react':
         specifier: ^18.2.0
         version: 18.3.28
+      '@vitest/runner':
+        specifier: ^3.0.0
+        version: 3.2.4
       tsup:
         specifier: ^8.0.0
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.10)(typescript@5.9.3)
