@@ -16,6 +16,16 @@ type SnapshotEachFn = <T>(
   optionsFn?: (value: T) => SnapshotOptions
 ) => void;
 
+// vitest's `TestAPI` is a type alias (not an interface), so it can't be augmented
+// directly. Augment `ExtendedAPI` from `@vitest/runner` instead — it's part of
+// vitest's `TestAPI` intersection, so adding `snapshot` here flows through to
+// `it.snapshot` and `test.snapshot`.
+declare module '@vitest/runner' {
+  interface ExtendedAPI<ExtraContext> {
+    snapshot: SnapshotTestFn & { each: SnapshotEachFn };
+  }
+}
+
 /**
  * Parses the test name to extract snapshot display name and group.
  * Uses the " snapshot: " marker convention.

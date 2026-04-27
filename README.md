@@ -209,7 +209,7 @@ Add the package to `compilerOptions.types` in your `tsconfig.json`. This applies
 Alternatively, add a triple-slash reference in any `.ts` file that is part of your TypeScript compilation:
 
 ```ts
-/// <reference types="@sentry/scrapbook-vitest/framework-augment" />
+/// <reference types="@sentry/scrapbook-vitest/framework" />
 ```
 
 ## Output
@@ -249,3 +249,16 @@ To use a local build in another project, reference the packages via `file:` in t
   "@sentry/scrapbook-jest": "file:../path/to/scrapbook/packages/jest"
 }
 ```
+
+## Releasing
+
+Releases are cut with [`craft`](https://github.com/getsentry/craft) via the **Prepare Release** GitHub Action. All three packages (`@sentry/scrapbook`, `@sentry/scrapbook-jest`, `@sentry/scrapbook-vitest`) are versioned and published together.
+
+To cut a release:
+
+1. Go to the [Prepare Release workflow](../../actions/workflows/release.yml) and click **Run workflow**.
+2. Enter the version. Either an explicit version (`0.2.0`) or a bump type (`major`, `minor`, `patch`).
+3. Run the workflow. Craft opens a `release/X.Y.Z` PR that bumps `package.json` versions and updates the changelog.
+4. Review and merge the PR. Craft then publishes the three packages to npm (public access) and creates a GitHub release tagged `vX.Y.Z`.
+
+Targets and changelog policy live in `.craft.yml`. The changelog is generated automatically from commit messages, so write clear, scoped commit subjects.
