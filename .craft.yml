@@ -3,6 +3,17 @@ minVersion: '2.21.0'
 changelog:
   policy: auto
 
+versionFiles:
+  - path: 'packages/core/package.json'
+    type: json
+    key: version
+  - path: 'packages/jest/package.json'
+    type: json
+    key: version
+  - path: 'packages/vitest/package.json'
+    type: json
+    key: version
+
 targets:
   - name: npm
     id: '@sentry/scrapbook'
