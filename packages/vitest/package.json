@@ -1,6 +1,6 @@
 {
   "name": "@sentry/scrapbook-vitest",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Vitest integration for @sentry/scrapbook",
   "types": "./dist/framework.d.ts",
   "exports": {
